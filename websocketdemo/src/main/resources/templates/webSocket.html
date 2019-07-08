@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket演示</title>
+</head>
+<script type="text/javascript" src="sockjs.min.js"></script>
+<script type="text/javascript" src="stomp.min.js"></script>
+<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+<body>
+<div>
+    <button id="connect" onclick="connect()">连接</button>
+    <button id="disconnect" onclick="disconnect()">断开连接</button>
+    <button id="serverTime" onclick="getServerTime()">服务器时间</button>
+    <br>
+    <span id="time"></span>
+</div>
+</body>
+<script type="text/javascript">
+    var stompClient = null;
+    $(function () {
+        setConnect(false);
+    })
+
+    function setConnect(connected) {
+        $("#connect").attr({disabled: connected});
+        $("#disconnect").attr({disabled: !connected})
+    }
+
+    function connect() {
+        var socket = new SockJS("/endpointWebsocket");
+        stompClient = Stomp.over(socket);
+        stompClient.debug = function (str) {
+            console.log(str + "\n");
+        };
+        stompClient.connect({}, function (frame) {
+            setConnect(true);
+            stompClient.subscribe("/topic/getResponse", function (response) {
+                showResponse(JSON.parse(response.body).message.message)
+            })
+        })
+    }
+
+    function disconnect() {
+        if (stompClient != null) {
+            stompClient.disconnect();
+        }
+        setConnect(false)
+    }
+
+    function getServerTime() {
+        //var message = "The server time is : "
+        stompClient.send("/getServerTime", {}, JSON.stringify({'key': 'time'}));
+    }
+
+    function showResponse(message) {
+        var response = $("#time");
+        response.append(message + "<br>");
+    }
+
+</script>
+</html>

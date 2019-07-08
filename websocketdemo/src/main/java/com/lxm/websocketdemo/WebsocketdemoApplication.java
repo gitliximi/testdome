@@ -1,0 +1,15 @@
+package com.lxm.websocketdemo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+public class WebsocketdemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WebsocketdemoApplication.class, args);
+    }
+
+}
